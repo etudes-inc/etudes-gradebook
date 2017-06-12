@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+/**********************************************************************************
+ * $URL: https://source.etudes.org/svn/apps/gradebook/trunk/gradebook-plugin/plugin/src/webapp/WEB-INF/components.xml $
+ * $Id: components.xml 12172 2015-12-01 01:19:22Z murthyt $
+ ***********************************************************************************
+ *
+ * Copyright (c) 2014 Etudes, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ **********************************************************************************/
+-->
+
+<beans>
+
+	<bean id="org.etudes.gradebook.plugin.JForumItemProvider"
+			class="org.etudes.gradebook.plugin.JForumItemProvider"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+
+		<property name="gradebookService"><ref bean="org.etudes.gradebook.api.GradebookService"/></property>
+		<property name="jforumService"><ref bean="org.etudes.api.app.jforum.JForumService"/></property>
+		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
+		<property name="jforumSecurityService"><ref bean="org.etudes.api.app.jforum.JForumSecurityService"/></property>
+		<property name="jforumGradeService"><ref bean="org.etudes.api.app.jforum.JForumGradeService"/></property>
+		<property name="jforumCategoryService"><ref bean="org.etudes.api.app.jforum.JForumCategoryService"/></property>
+		<property name="jforumForumService"><ref bean="org.etudes.api.app.jforum.JForumForumService"/></property>
+		<property name="jforumPostService"><ref bean="org.etudes.api.app.jforum.JForumPostService"/></property>
+		<property name="jforumSpecialAccessService"><ref bean="org.etudes.api.app.jforum.JForumSpecialAccessService"/></property>
+	</bean>
+	
+	<bean id="org.etudes.gradebook.plugin.MnemeItemProvider"
+			class="org.etudes.gradebook.plugin.MnemeItemProvider"
+			init-method="init"
+			destroy-method="destroy"
+			singleton="true">
+
+		<property name="gradebookService"><ref bean="org.etudes.gradebook.api.GradebookService"/></property>
+		<property name="assessmentService"><ref bean="org.etudes.mneme.api.AssessmentService"/></property>
+		<property name="submissionService"><ref bean="org.etudes.mneme.api.SubmissionService"/></property>
+		<property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
+		<property name="mnemeSecurityService"><ref bean="org.etudes.mneme.api.SecurityService"/></property>
+	</bean>
+</beans>

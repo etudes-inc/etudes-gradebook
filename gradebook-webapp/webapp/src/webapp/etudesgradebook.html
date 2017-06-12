@@ -1,0 +1,945 @@
+<style type="text/css" media="all">
+.assessmentTableExtraSpacing
+{
+  cellpadding:7px;
+  cellspacing:7px;
+}
+
+.sorter-false
+{
+	color:#656565;
+	padding-left: 4px;
+	cursor: default;
+}
+
+.evenRow
+{
+	background-color: #FAFAFA;
+}
+
+.typeEmptyHeaderRow
+{
+	background-color: #E1E1E1;
+	border-bottom: 20px solid #ffffff;
+}
+
+.typeHeaderRow
+{
+	background-color: #E1E1E1;
+}
+
+.blockedRow
+{
+	background-color: #FFBAD2;
+}
+
+.blockedText
+{
+	color: #FFBAD2;
+}
+
+.td_bold
+{
+	font-weight: bold;
+}
+	
+.tdCenter
+{
+	text-align:center;
+}
+
+.tdItalic
+{
+	font-style: italic;
+}
+
+.tooltip
+ {
+    background: #fff77d;
+    border: 1px solid #fff77d;
+    margin-top:5px;
+    margin-left: -89px;
+    padding:4px;
+    border-radius: 8px;
+    position: absolute;
+    z-index:20;
+    white-space: normal;
+    font-size: 11px;
+    width: 160px;
+  }
+
+ /* arrows - :before and :after. Sides perpendicular to arrow side is transparent and opposite side has color */
+ .tooltip:before
+  {
+    position: absolute;
+    display: inline-block;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #fff77d;
+    border-left: 7px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    right: 62px;
+    top: -7px;
+    content: '';
+   }
+
+ .tooltip:after
+  {
+     position: absolute;
+     display: inline-block;
+     border-right: 6px solid transparent;
+     border-bottom: 6px solid #fff77d;
+     border-left: 6px solid transparent;
+     right: 63px;
+     top:  -6px;
+     content: '';
+  }
+
+.tooltipTitle
+{
+	padding:4px;
+	background-color:#fff77d;
+}
+
+.tooltipBody
+{
+	padding:4px;
+	background-color:#fffacd;
+}
+
+.tableScroll
+{
+	height:500px;
+	overflow:auto;
+}
+
+.testHeaderFixed
+{
+	display:block;
+}
+
+.detailsHeaderImg
+{
+	margin-left: 4px;
+	vertical-align: middle;
+}
+
+@media print  { .noprint  { display: none; } }
+
+.navActions
+{
+	/* border to tie into the table header */
+	border-top: 1px solid #bbb;
+	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	font-size:13px;
+}
+
+.navActionsBottom
+{
+	/* border to tie into the table header */
+	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	border-bottom: 1px solid #bbb;
+	font-size:13px;
+}
+
+.navActionsBottom td a , .navActions td a
+{
+	/* room for the icon on the left */
+	padding-left: 20px;	
+	color: #6066AC !important;
+	text-decoration: none !important;
+	background-position: center left;
+	background-repeat: no-repeat;
+}
+
+.navActionsBottom td span, .navActions td span
+{
+	/* room for the icon on the left */
+	margin-top:4px;
+}
+ 
+.category_edit
+{
+	background: url('support/icons/gear-edit.png') no-repeat 60% 50%;
+}
+
+.reorderWidth
+{
+	width:60px;
+}
+
+.reviewScore
+{
+	width:100%;
+	display:block;
+	color:#006400;
+	background:#E4E4E4 none repeat;
+	font-weight:bold;
+	padding:2px;
+}
+</style>
+
+<div id="gradebook_mode_bar" class="e3_tool_mode_bar"></div>
+
+<!-- Assessments mode -->
+<div id="gradebook_assessments" class="e3_offstage">
+
+	<div class="e3_configure_set">
+		<div class="e3_configure_set_row">
+			<div class="e3_configure_set_entry_field">
+				<div class="e3_stacked_edit_header_no_icon" id="assessments_count"> </div>
+				<div class="e3_stacked_edit_header_no_icon" id="assessment_total_points"> </div>	
+				<div class="e3_stacked_edit_header_no_icon" id="assessment_extra_max_points"> </div>
+			</div>	
+		</div>				
+	</div>	
+	<div id="gradebook_assessments_navbar_top" class="e3_tool_navbar"></div>
+	<div id="sortPref"></div>
+	<div class="e3_tool_items">
+			<table id="assessments_table" class="e3_tool_item_table e3_sortable_table tablesorter">
+			  <thead/>			  
+			  <tbody />
+			</table>
+	</div>
+
+	<div id="gradebook_assessments_navbar_bottom" class="e3_tool_navbar"></div>
+</div>
+
+<div id="gradebook_student_assessments" class="e3_offstage">
+	<div class="e3_configurationFeature">
+		<div class="e3_configurationFeature_frame">
+			<div id="feature_title" class="e3_configurationFeature_title">
+				<span id="student_feature_title">Gradebook</span> 
+			</div>
+		</div>
+		<div class="e3_configurationFeature_body">
+			<div class="e3_configure_set">
+				<div class="e3_configure_set_row e3_left">
+					<div class="e3_left e3_bold" id="student_gradetoDate_header">Grade to Date:</div>
+					<div class="e3_configure_set_entry_field" id="student_gradetoDate_letterpoints"></div>
+				</div>	
+				<div class="e3_configure_set_row e3_left">
+					<div class="e3_left e3_bold"></div>
+					<div class="e3_configure_set_entry_field" id="student_gradetoDate_points"></div>
+				</div>	
+				<div class="e3_configure_set_row e3_left" id="student_points_row">
+					<div class="e3_left e3_bold" id="student_points_header">Total Points:</div>
+					<div class="e3_configure_set_entry_field" id="student_points"></div>			
+				</div>						
+			</div>
+		</div>		
+		<div class="e3_tool_items">
+			<table id="student_assessments_table" border="0" class="e3_tool_item_table">
+			  <thead >
+				  <tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th>Title</th>
+						<th width="120px">Open</th>
+						<th width="120px">Due</th>
+						<th width="120px">Finished</th>
+						<th width="140px">Reviewed</th>
+						<th width="75px">Points</th>
+						<th width="10px"></th>
+						<th width="50px">Score</th>
+					</tr>
+			  </thead>		
+			  <tfoot> 
+			  	<tr>
+				  	<td colspan="10" class="e3_footnote">* Indicates dropped item </td>
+			  	</tr>
+			  </tfoot>	
+			  <tbody />
+			</table>
+		</div>	
+		<div id="gradebook_student_assessments_navbar" class="e3_tool_navbar"></div>
+	 </div>
+</div>
+
+<!-- student itemized mode -->
+<div id="gradebook_student_itemized_grades" class="e3_offstage">
+	<div class="e3_configurationFeature">
+	  <div class="e3_configurationFeature_body">
+		<div id="overall_item_instructions" class="e3_dialog_instructions">Currently, the overall grade displayed to students includes
+			<span id='item_option_instructions' class='e3_bold'> </span><span>. Change </span>
+			<a id='navigateToOptions' href='#' onclick='selectToolMode(3, tool_obj);'> Options. </a>
+		</div>		
+			<table id="itemized_grades_overview_table" border="0" width="65%">
+				<tr valign="top">
+					<td valign="top"> 
+						<table border="0">
+							<tr>
+							 <td class="e3_data_header" id="itemized_student_max_points"> </td>
+							</tr>							
+							<tr>
+							 <td class="e3_data_header" id="itemized_student_extra_max_points"> </td>
+							</tr>
+							<tr>
+							 <td class="e3_data_header" id="itemized_student_class_avg"> </td>
+							</tr>
+						</table>
+					</td>				
+				</tr>
+			</table>						
+		</div>	
+					
+		<div id="gradebook_student_itemized_grades_navbar_top" class="e3_tool_navbar"> </div>
+		<div>
+			<table class="navActions" height="24px" width="100%">
+				<tr valign="bottom">
+				<td>
+					<a id="student_itemized_grades_export" href="" style="background-image:url(support/icons/export.png);" tabindex="0">Export to CSV</a>
+				</td>
+				<td class="navigate_headers" style="float:right">		
+					<span class="nav_headers_title e3_bold">Assessments:</span>
+					<img class="colFirst e3_hot" src="support/icons/pager_first.png" />	
+					<img class="colPrev e3_hot" src="support/icons/pager_prev.png" />	
+					<span class="nav_headers_text"> (1-1) of 1 </span>
+					<img class="colNext e3_hot" src="support/icons/pager_next.png" />
+					<img class="colLast e3_hot" src="support/icons/pager_last.png" />					
+				</td>			
+			</tr>
+			</table>
+		</div>
+		<div class="e3_tool_items">
+			<div id="students_all_assessments_grades">
+				<table id="students_all_assessments_grades_table" class="e3_tool_item_table e3_sortable_table tablesorter">
+					<thead />
+					<tfoot />
+					<tbody />		
+				</table>
+			</div>
+				<table class="navActionsBottom" width="100%">
+					<tr>
+						<td class="navigate_headers" style="float:right">		
+							<span class="nav_headers_title e3_bold">Assessments:</span>
+							<img class="colFirst e3_hot" src="support/icons/pager_first.png" />	
+							<img class="colPrev e3_hot" src="support/icons/pager_prev.png" />	
+							<span class="nav_headers_text"> (1-1) of 1 </span>
+							<img class="colNext e3_hot" src="support/icons/pager_next.png" />
+							<img class="colLast e3_hot" src="support/icons/pager_last.png" />					
+						</td>		
+					</tr>
+				</table>
+			</div>
+			<div class="e3_footnote">* Indicates dropped item</div>
+		
+		<div id="gradebook_student_itemized_grades_navbar_bottom" class="e3_tool_navbar"> </div>			
+	</div>
+</div>
+
+<!-- students mode -->
+<div id="gradebook_student_grades" class="e3_offstage">
+	<div class="e3_configurationFeature">
+	  <div class="e3_configurationFeature_body">
+		<div id="overall_instructions" class="e3_dialog_instructions">Currently, the overall grade displayed to students includes
+			<span id='overall_option_instructions' class='e3_bold'> </span><span>. Change </span>
+			<a id='navigateToOptions' href='#' onclick='selectToolMode(3, tool_obj);'> Options. </a>
+		</div>				
+			<table id="grades_overview_table" border="0" width="95%">
+				<tr valign="top">
+					<td valign="top"> 
+						<table border="0">
+							<tr>
+							 <td class="e3_data_header" id="student_max_points"> </td>
+							</tr>							
+							<tr>
+							 <td class="e3_data_header" id="student_extra_max_points"> </td>
+							</tr>
+							<tr>
+							 <td class="e3_data_header" id="student_class_avg"> </td>
+							</tr>
+						</table>
+					</td>
+					<td id="boost" valign="top">
+					  <table border="0" cellpadding="5px">
+						<tr>
+							<td class="e3_data_header">Boost all grades by</td>
+							<td> <input type="text" size="2" id="boost_number" />  </td>
+							<td> <select id="boost_type" class="e3_center"><option value="2">Percentage points</option> <option value="1">Points</option></select></td>
+							<td><a id="apply_grades_boost" href="#"><img id="boost_img" src="support/icons/apply-grade-boost.png" style="border:0"/>Apply</a>
+						</tr>
+						<tr>
+							<td colspan="3" class="e3_data_header" id="drop_score"> </td>
+							<td><a id="gotoDropScores" href="#"><img src="support/icons/gear-edit.png" style="border:0"/>Edit</a>
+						</tr>
+					   </table>
+					</td>	
+				</tr>
+			</table>						
+		</div>	
+					
+		<div id="gradebook_studentgrades_navbar_top" class="e3_tool_navbar"> </div>
+		<div>
+			<table class="navActions" height="24px" width="100%">
+				<tr valign="bottom">
+				<td>
+					<a id="student_grades_export" href="" style="background-image:url(support/icons/export.png);" tabindex="0">Export to CSV</a>
+				</td>		
+			</tr>
+			</table>
+		</div>
+		<div class="e3_tool_items">
+			<table id="students_overall_grades_table" class="e3_tool_item_table e3_sortable_table tablesorter">
+				<thead />
+				<tbody />
+			</table>
+		</div>	
+		<div id="gradebook_studentgrades_navbar_bottom" class="e3_tool_navbar"> </div>			
+	</div>
+</div>
+
+<!-- grade options -->
+<div id="gradebook_grade_options" class="e3_offstage">
+	<div class="e3_configurationFeature">
+		<div class="e3_configurationFeature_frame">
+			<div class="e3_configurationFeature_title">
+				<a id="grade_options_grade_display_link" href="" class="e3_tool_configure e3_toolUiLink" title="Edit Grade Display">Edit</a>
+				Grade Display								
+			</div>
+		</div>
+		<div class="e3_configurationFeature_body">	
+			<div class="e3_configure_set">
+				<div class="e3_configure_set_row">
+					<div class="e3_configure_set_entry_header" style="text-align:left">Current grade displayed to students includes:</div>
+				</div>
+			</div>
+			<table id="include_grades_table" style="margin-left: 25px;">
+				<tbody>
+					<tr id="grade_display_released_all"></tr>
+					<tr id="grade_display_show_letter_grade"></tr>
+				</tbody>
+			</table>
+		</div>			
+	</div>
+	
+	<!-- Final grade calculation -->	
+	<div class="e3_configurationFeature">
+		<div class="e3_configurationFeature_frame">
+			<div class="e3_configurationFeature_title">
+				<a id="grade_options_drop_score_link" href="" class="e3_tool_configure e3_toolUiLink" title="Edit Drop Scores">Edit</a>
+				Drop Lowest Score							
+			</div>			
+		</div>
+		<div class="e3_configurationFeature_body">	
+			<div class="e3_dialog_instructions">Click on Edit to specify how many scores to drop. Check the box to apply these options to the final grades.</div>
+			<div style="margin-left:25px;" class="e3_configure_set">	
+				<div class="e3_configure_set_entry_header">
+					<input type="checkbox" id="grade_options_drop_score_checked" name="display_drop_score" value="0">
+					<label for="display_drop_score">Apply to final grades now</label>
+				</div>							
+			</div>
+			<div id="grade_options_drop_score_footnote" class="e3_footnote e3_alert e3_offstage">
+				Drop can't be applied. Drop value is higher than available items in category.
+			</div>		
+			<table id="categories_drop_table" style="margin-left: 25px;" cellspacing="10px" class="e3_configure_setting">
+				<thead>
+					<tr>
+						<th>Category</th>
+						<th class="tdCenter">Available</th>
+						<th class="tdCenter">Drop</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>					
+	</div>
+	
+	<!-- scales -->				
+	<div class="e3_configurationFeature">
+		<div class="e3_configurationFeature_frame">
+			<div class="e3_configurationFeature_title">
+				<a id="grade_options_grading_scale_link" href="" class="e3_tool_configure e3_toolUiLink" title="Edit Grading Scale">Edit</a>
+				Grading Scale								
+			</div>
+		</div>
+		<div class="e3_configurationFeature_body">
+			<div class="e3_configure_set" id="grade_options_grading_scale_message" style="display:none">
+				<div class="e3_configure_set_row" id="grade_options_grading_scale_message_alert"></div>
+			</div>
+			<div class="e3_configure_set">
+					<div class="e3_configure_set_row">										
+						<div class="e3_configure_set_entry_header">Grade Type:</div>
+						<div class="e3_configure_set_entry_field" id="grade_types"></div>
+					</div>			
+			 </div>
+			<table id="grade_scale_table" class="e3_configure_setting" width="20%">
+				<thead>
+					<tr>
+						<th>Grade</th>
+						<th width="50%">Minimum %</th>
+					</tr>
+				</thead>									
+				<tbody />							
+			</table>	   
+		</div>
+	</div>
+</div>
+
+<div id="grade_options_drop_score_dialog" title="Drop Low Scores">
+	<div class="e3_dialog_instructions e3_wide">Set the number of low scores to drop by category.</div>	
+	<div class="e3_dialog_section">
+ 		<div class="e3_dialog_header"></div>
+ 	
+		<table id="grade_options_edit_lowscore_table" width="40%" class="e3_tool_item_table">
+			<thead>
+				<tr>
+					<th></th>
+				    <th>Category</th>
+				    <th>Available</th>
+				    <th>Drop</th>
+  				</tr>
+  			</thead>		
+			<tbody>
+			</tbody>
+		</table>	
+		<div class="e3_configure_set">	
+			<div class="e3_configure_set_row">
+				<input type="checkbox" id="grade_options_edit_drop_score_checked" name="display_drop_score" value="0">
+				<label for="display_drop_score" class="e3_configure_set_entry_header">Apply to final grades now</label>
+			</div>							
+		</div>	
+		<div id="grade_options_edit_drop_score_footnote" class="e3_footnote e3_alert e3_offstage">
+				Drop can't be applied. Drop value is higher than available items in category.
+		</div>			
+	</div>
+</div>	
+
+
+<!-- Categories mode -->
+<div id="gradebook_categories" class="e3_offstage">
+	<div class="e3_configurationFeature">
+		<div class="e3_configurationFeature_frame">
+			<div class="e3_configurationFeature_title">
+				<a id="preferences_sort_order_link" href="" class="e3_tool_configure e3_toolUiLink" title="Select default">Edit</a>
+				Default							
+			</div>
+		</div>
+		<div class="e3_configurationFeature_body">
+			<div class="e3_configure_set_entry_field">
+				<div class="e3_stacked_edit_header_no_icon" id="prefs_sort_setting"></div>
+			</div>							
+		</div>
+	</div>
+	
+	<!-- weights -->
+		<div id="configure_standard_categories" class="e3_configurationFeature" class="e3_offstage">
+		<div class="e3_configurationFeature_frame">
+			<div id="standard_weights_title" class="e3_configurationFeature_title">
+				<a id="categories_configure_weights_link" href="" class="e3_tool_configure e3_toolUiLink" title="Edit Standard Categories">Edit</a>
+				Standard Categories						
+			</div>
+			<div id="custom_weights_title" class="e3_configurationFeature_title e3_offstage">
+				<a id="custom_categories_configure_weights_link" href="" class="e3_tool_configure e3_toolUiLink" title="Edit Custom Categories">Edit</a>
+				Custom Categories						
+			</div>
+		</div>
+		<div class="e3_configurationFeature_body">
+			<div id="standard_instructions" class="e3_instructions e3_offstage">Set the weight percentages and the weight distribution of the items within each category. This is optional.
+			If no weights are added, the point values of your assessments will be used to calculate student grades.</div>	
+			
+			<div id="custom_instructions" class="e3_instructions e3_offstage">This option allows you to customize the names of the site's categories. Optionally, you may set weight percentages and weight distribution in each category.
+			If no weights are added, the assessment point values will be used to calculate student grades.</div>	
+					
+			<table id="categories_weights_table" cellspacing="10px" class="e3_configure_setting">
+				<thead>
+					<tr>
+						<th>Category</th>
+						<th width="25%">Weight</th>
+						<th width="30%">Distribution</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+			<div class="e3_configure_set">
+				<div class="e3_configure_set_row">
+					<div id="subTotalList-header" class="e3_left e3_bold">Sub-Total:</div>		
+					<div class="e3_configure_set_entry_field" id="weight-subtotal">0.0%</div>			
+				</div>	
+				<div class="e3_configure_set_row">
+					<div class="e3_left e3_bold">With Extra Credit:</div>
+					<div class="e3_configure_set_entry_field" id="weight-total">0.0%</div>
+				</div>	
+			</div>						
+		</div>
+	</div>
+</div>
+
+<div id="category_type_dialog" title="Select Default Type">
+	<div class="e3_dialog_instructions e3_wide">Select default to categorize assessments</div>
+	<div class="e3_dialog_section">
+ 		<div class="e3_dialog_header">Default</div>
+		<div class="e3_configure_set">				
+			<div class="e3_configure_set_entry_field">
+				<div class="e3_dialog_radio_set">
+					<div class="e3_dialog_radio_entry">
+						<input type="radio" name="category_sort_option" id="category_sort_option_1" value="1">
+						<label for="category_sort_option_1">Standard</label>
+					</div>
+					<div class="e3_dialog_radio_entry">
+						<input type="radio" name="category_sort_option" id="category_sort_option_2" value="2">
+						<label for="category_sort_option_2">Custom</label>
+					</div>						
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>
+
+<div id="categories_edit_dialog" title="Edit Categories">
+	<div id="edit_category_instructions" class="e3_dialog_instructions e3_wide">You may add weight percentages and weight distribution for the items in each category.</div>	
+	<div class="e3_dialog_section">
+ 		<div id="edit_category_dialog_header" class="e3_dialog_header">Standard Values</div>
+ 		<div id="edit_categories_action" class="e3_tool_actions e3_offstage">
+				<ul>
+					<li>
+						<a id="categories_configure_add" href="" style="background-image:url(support/icons/add.png);" tabindex="0">Add</a>
+					</li>
+				</ul>
+			</div>	
+		<table id="categories_configure_weights_table" class="e3_tool_item_table">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Category</th>
+					<th>Points</th>
+					<th>Weight %</th>
+					<th>Distribution</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+		<div class="e3_configure_set">
+			<div class="e3_configure_set_row">				
+				<div id="subTotal-header" class="e3_left e3_bold">Sub-Total:</div>		
+				<div class="e3_configure_set_entry_field" id="weight-edit-subtotal">0%</div>			
+			</div>	
+			<div class="e3_configure_set_row">				
+				<div class="e3_left e3_bold">With Extra Credit:</div>
+				<div class="e3_configure_set_entry_field" id="weight-edit-total">0%</div>
+			</div>	
+			<div id="subTotalFootnote" class="e3_configure_set_row">				
+				<div class="e3_footnote">* Sub-Total should add up to 100%.</div>
+			</div>	
+		</div>					
+	</div>
+</div>	
+
+<!-- Grade Options mode -->
+<div id="grade_options_grading_scale_dialog" title="Grading Scale">
+	<div class="e3_dialog_instructions e3_wide">Select Grading Scale</div>
+	<div class="e3_dialog_section">
+ 		<div class="e3_dialog_header">Default Grading Scale</div>
+		<div class="" style="display: table; width: 80%">
+			<div style="display: table-cell;">
+				<div class="e3_configure_set_entry_field" id="grade_types_dialog"> 
+					<select id="grade_types_type_dialog" size="1"></select>
+				</div>
+				<div class="e3_tool_items">
+					<table id="grade_scale_table_dialog" class="e3_tool_item_table">
+						<thead>
+							<tr>
+							    <th width="80">Grade</th>
+							    <th>Minimum %</th>
+			  				</tr>
+			  			</thead>
+						<tbody />
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="student_grades_export_dialog" title="Export to Csv">
+	<div class="e3_dialog_instructions e3_wide">Select section to export data.</div>
+	<div class="e3_dialog_section">		
+		<div class="e3_dialog_header">Export</div>		
+	</div>		
+</div>
+
+<div id="student_print_dialog" title="Print Grades" style="display: none;">
+	<div class="noprint">
+		<a href="#" onclick="javascript:window.print()" class="toolUiLink"><img src="support/icons/printer.png" border="0" align="absmiddle"/> Send to Printer </a>
+		 | <a href="#" onclick="$('#student_print_dialog').dialog('close');return false;" class="toolUiLink"> 
+	    		<img src="support/icons/delete.png" border="0" align="absmiddle"/>Close Window</a>	 
+	</div>
+				
+  <div class="e3_configurationFeature">
+	<div class="e3_configurationFeature_frame">
+		<div id="feature_title" class="e3_configurationFeature_title">
+			<span id="print_feature_title">Gradebook</span> 
+		</div>
+	</div>
+	<div class="e3_configurationFeature_body">
+		<div class="e3_configure_set">
+			<div class="e3_configure_set_row e3_left">
+				<div class="e3_left e3_bold" id="printStudent_gradetoDate_header">Grade to Date:</div>
+				<div class="e3_configure_set_entry_field" id="printStudent_gradetoDate_letterpoints"></div>
+			</div>	
+			<div class="e3_configure_set_row e3_left">
+				<div class="e3_left e3_bold"></div>
+				<div class="e3_configure_set_entry_field" id="printStudent_gradetoDate_points"></div>
+			</div>	
+			<div class="e3_configure_set_row e3_left" id="printStudent_points_row">
+				<div class="e3_left e3_bold" id="printStudent_points_header">Total Points:</div>
+				<div class="e3_configure_set_entry_field" id="printStudent_points"></div>			
+			</div>						
+		</div>
+	</div>		
+	<div class="e3_tool_items">
+		<table id="print_assessments_table" border="0" class="e3_tool_item_table">
+		  <thead >
+			  <tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th>Title</th>
+					<th width="120px">Open</th>
+					<th width="120px">Due</th>
+					<th width="120px">Finished</th>
+					<th width="140px">Reviewed</th>
+					<th width="75px">Points</th>
+					<th width="10px"></th>
+					<th width="50px">Score</th>
+				</tr>
+		  </thead>		
+		  <tfoot> 
+		  	<tr>
+			  	<td colspan="10" class="e3_footnote">* Indicates dropped item </td>
+		  	</tr>
+		  </tfoot>	
+		  <tbody />
+		</table>
+	</div>	
+   </div>		
+</div>
+
+<div id="preferences_gradeCalculation_dialog" title="Grade Display">
+	<div class="e3_dialog_instructions e3_wide">Current grade displayed to students includes:</div>
+	<div class="e3_dialog_section">			
+		<div class="e3_dialog_radio_entry">
+			<input type="radio" name="release_grades_option" id="release_grades_option_1" value="2">
+			<label for="release_grades_option_1">Released assessments only</label>
+		</div>
+		<div class="e3_dialog_radio_entry">
+			<input type="radio" name="release_grades_option" id="release_grades_option_2" value="1">
+			<label for="release_grades_option_2">All assessments, including not released ones (blank entries are treated as zeros).</label>
+		</div>
+	</div>	
+	
+	<div class="e3_dialog_instructions e3_wide">Show students letter grade for points earned:</div>
+	<div class="e3_dialog_section">	
+		<div class="e3_dialog_radio_entry">
+			<input type="radio" name="display_letter_grade" id="display_letter_grade_1" value="1">
+			<label for="display_letter_grade_1">Yes</label>
+		</div>
+		<div class="e3_dialog_radio_entry">
+			<input type="radio" name="display_letter_grade" id="display_letter_grade_2" value="0">
+			<label for="display_letter_grade_2">No</label>
+		</div>
+	</div>		
+</div>
+
+<!-- assessments detail screen -->
+<div id="gradebook_assessment_detail" class="e3_offstage">
+	<div class="e3_configurationFeature">
+			<div class="e3_configurationFeature_frame">
+				<div id="details_feature_title" class="e3_configurationFeature_title">
+					Course Assessment Details
+				</div>
+			</div>
+			<div class="e3_configurationFeature_body">
+				<div class="e3_configure_set">
+					<div class="e3_configure_set_row">
+						<div class="e3_configure_set_entry_header">Points:</div>
+						<div class="e3_configure_set_entry_field" id="assessment_item_points"></div>				
+					</div>
+					<div class="e3_configure_set_row">
+						<div class="e3_configure_set_entry_header">Status:</div>
+						<div class="e3_configure_set_entry_field red" id="assessment_item_status"></div>
+					</div>
+					<div class="e3_configure_set_row">
+						<div class="e3_configure_set_entry_header">Open:</div>
+						<div class="e3_configure_set_entry_field" id="assessment_item_open"></div>				
+					</div>
+					<div class="e3_configure_set_row">
+						<div class="e3_configure_set_entry_header">Due:</div>
+						<div class="e3_configure_set_entry_field" id="assessment_item_due"></div>				
+					</div>
+					<div class="e3_configure_set_row">
+						<div class="e3_configure_set_entry_header">Allow Until:</div>
+						<div class="e3_configure_set_entry_field" id="assessment_item_accept"></div>				
+					</div>
+				</div>
+			</div>
+	
+			<div id="item_details_navbar_top" class="e3_tool_navbar"> 	</div>
+			<div class="e3_tool_actions">
+			<ul>
+				<li>
+					<a id="item_details_export" href="" style="background-image:url(support/icons/export.png);" tabindex="0">Export to CSV</a>
+				</li>
+				<li>
+					<a id="item_details_best" href="" style="background-image:url(support/icons/star.png);" class="e3_action_current" tabindex="1">Released Only</a>
+				</li>
+				<li>
+					<a id="item_details_allSubmission" href="" style="background-image:url(support/icons/grade.png);" tabindex="2">View or Grade All Submissions</a>
+				</li>				
+			</ul>
+		</div>
+		<div>
+			<table id="item_details_table" class="e3_tool_item_table e3_sortable_table">
+			<thead>
+				<tr>
+					<th class="tablesorter-header">Name</th>	
+					<th></th>				
+					<th></th>
+					<th>Section</th>
+					<th class="tablesorter-header">Status</th>				
+					<th class="tablesorter-header">Finished</th>
+					<th class="tablesorter-header">Reviewed</th>
+					<th width="15px"></th>
+					<th class="tablesorter-header">Score</th>				
+				</tr>
+			</thead>				
+			<tbody>
+			</tbody>
+			</table>		
+		</div>
+		  <div id="item_details_navbar_bottom" class="e3_tool_navbar"> 	</div>
+		  <div><iframe id="csvDownload" src="about:blank" style="display:none" ></iframe></div>
+		</div>	
+</div>	
+
+<div id="delete_category_alert"  title="Delete Category" style="display: none;">
+	<div class="e3_wide">
+		Category can't be deleted. Move items out of category from Assessments page.
+	</div>
+</div>
+
+<div id="extraCredit_delete_category_alert"  title="Delete Category" style="display: none;">
+	<div class="e3_wide">
+		The Extra Credit category cannot be deleted. If you don't have any assessments under the Extra Credit category, it will not be included in your students' view of the gradebook.
+	</div>
+</div>
+
+<div id="subtotal_category_alert"  title="Subtotal Alert" style="display: none;">
+	<div class="e3_wide">
+		The subtotal weight of categories must be 100% (excluding extra credit). Please adjust the weights accordingly.
+	</div>
+</div>
+
+<div id="negative_value_alert" title="Weight Value Alert" style="display: none;">
+    <div class="e3_wide">
+        Please enter a positive value.
+    </div>
+</div>
+
+<div id="higher_value_alert" title="Drop Value Alert" style="display: none;">
+    <div class="e3_wide">
+     Drop value is higher than available items in category.
+    </div>
+</div>
+
+<!-- notes -->
+<div id="notesOnStudents"  title="Note on " style="display: none;"> 
+	<table id="noteStudentTable"></table>	
+</div>
+
+<!-- override log history -->
+<div id="logComments"  title="Grade Log" style="display: none;"> 
+	<table id="logCommentsTable"></table>	
+</div>
+
+<div id="openPMDialog" title="Send Private Message" style="display: none;">
+	<img id="pmdialog_loading" src="support/icons/loading.gif" class="e3_offstage" style="width:100px; height:100px;"/>
+	<iframe id="PMFrame" src="/e3/support/icons/pm.png" allowfullscreen style="border-style:none;" />
+</div>
+
+<!-- indvidual student summary -->
+<div id="gradebook_student_full_details" class="e3_offstage">
+	<div class="e3_configurationFeature">
+		<div class="e3_configurationFeature_frame">
+			<div id="detail_feature_title" class="e3_configurationFeature_title">
+				Gradebook
+			</div>
+		</div>
+		<div class="e3_configurationFeature_body">
+			<div class="e3_configure_set">
+				<div class="e3_configure_set_row">
+					<div class="e3_left e3_bold">Status:</div>
+					<div class="e3_configure_set_entry_field" id="student_status"></div>
+				</div>	
+				<div class="e3_configure_set_row e3_left">
+					<div class="e3_left e3_bold" id="student_details_gradetoDate_header">Grade to Date:</div>
+					<div class="e3_configure_set_entry_field" id="student_details_gradetoDate_letterpoints"></div>
+				</div>	
+				<div class="e3_configure_set_row e3_left">
+					<div class="e3_left e3_bold"></div>
+					<div class="e3_configure_set_entry_field" id="student_details_gradetoDate_points"></div>
+				</div>	
+				<div class="e3_configure_set_row e3_left" id="student_details_points_row">
+					<div class="e3_left e3_bold" id="student_details_points_header">Total Points:</div>
+					<div class="e3_configure_set_entry_field" id="student_details_points"></div>
+				</div>						
+			</div>
+		</div>		
+		<div id="gradebook_student_full_details_top_navbar" class="e3_tool_navbar"></div>
+		<div id="indv_student_export" class="e3_tool_actions">
+			<ul>
+				<li>
+					<a id="student_details_export" href="" style="background-image:url(support/icons/export.png);" tabindex="0">Export to CSV</a>
+				</li>
+				<li>
+					<a id="student_details_pm" href="" style="background-image:url(support/icons/pm.png);" tabindex="1">Send PM</a>
+				</li>	
+				<li>
+					<a id="student_details_best" href="" style="background-image:url(support/icons/star.png);" class="e3_action_current" tabindex="2">Released Only</a>
+				</li>
+				<li>
+					<a id="student_details_allSubmission" href="" style="background-image:url(support/icons/grade.png);" tabindex="3">View or Grade All Submissions</a>
+				</li>		
+				<li>
+					<a id="student_details_notes" href="" style="background-image:url(support/icons/notes_plain.png);" tabindex="4">Notes</a>
+				</li>		
+			</ul>
+		</div>
+		<div class="e3_tool_items">
+			<table id="student_details_table" border="0" class="e3_tool_item_table">
+			  <thead>
+				  <tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th>Title</th>
+					<th width="120px">Open</th>
+					<th width="120px">Due</th>
+					<th width="120px">Finished</th>
+					<th width="140px">Reviewed</th>
+					<th width="75px">Points</th>
+					<th width="10px"></th>
+					<th width="75px">Score</th>
+			    </tr>
+			  </thead>		
+			  <tfoot> 
+			  	<tr>
+				  	<td colspan="10" class="e3_footnote">* Indicates dropped item </td>
+			  	</tr>
+			  </tfoot>		
+			  <tbody />
+			</table>
+		</div>
+	
+		<div id="gradebook_student_full_details_navbar" class="e3_tool_navbar"></div>	
+	    <div><iframe id="csvDownload" src="about:blank" style="display:none" ></iframe></div>
+  </div>
+</div>

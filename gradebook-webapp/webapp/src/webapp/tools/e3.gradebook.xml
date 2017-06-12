@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<registration>
+
+	<tool
+			id="e3.gradebook"
+			title="Gradebook"
+			description="Gradebook"
+			dispatcher="E3"
+			e3Code="etudesgradebook">
+			
+			<category name="course" />
+			<category name="project" />
+
+	</tool>
+
+</registration>
